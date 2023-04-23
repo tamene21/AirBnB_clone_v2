@@ -42,5 +42,6 @@ def isitnumber(n):
 def numbertemplate(n):
     """display an HTML page while n is integer"""
     return render_template('5-number.html', n=n)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000')
