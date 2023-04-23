@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route('/',strict_slashes=False)
 def newApp():
-"""Return Hello HBNB! """
+    """Return Hello HBNB!"""
     return "Hello HBNB!"
 
 if __name__ == '__main__':
