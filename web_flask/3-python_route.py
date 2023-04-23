@@ -25,10 +25,11 @@ def cfun(text):
     return 'C ' + text.replace('_', ' ')
 
 
+@app.route('/python', strict_slashes=False)
 @app.route('/python/<text>', strict_slashes=False)
 def pythonIsCool(text= 'is cool'):
-    """display 'python' followed by the varibale text"""
-    return 'python ' + text.replace('_', ' ')
+    """display 'Python' followed by the varibale text"""
+    return 'Python ' + text.replace('_', ' ')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='5000')
