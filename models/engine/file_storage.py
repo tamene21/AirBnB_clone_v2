@@ -1,30 +1,33 @@
 #!/usr/bin/python3
 """
-containes the FileStorage class
+    Define class FileStorage
 """
-
 import json
-from models.amenity import Amenity
-from model.base_model import BaseModel
-from models.city import City
-from models.place import Place
-from models.review import Review
-from models.state import State
+import models
+from models.base_model import BaseModel
 from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
-classes = {"Amenity":Amenity, "BaseModel": BaseModel, "City": City, "place": Place,
-          "Review":Review, "State": State, "User": User}
+
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class FileStorage:
-    """serializes instances to JSON file and deserializes to to instances"""
-
-    _file_path = "file.json"
-    # dictionary - empty but will store all objects by <class name>.id
+    '''
+        Serializes instances to JSON file and deserializes to JSON file.
+    '''
+    __file_path = "file.json"
     __objects = {}
 
     def all(self, cls=None):
-        ''' Return a dict '''
+        '''
+            Return the dictionary
+        '''
         fs_objects = {}
         if cls:
             if type(cls) is str and cls in classes:
@@ -35,32 +38,36 @@ class FileStorage:
                 for key, val in self.__objects.items():
                     if cls.__name__ == key.split('.')[0]:
                         fs_objects[key] = val
-         else:
-             return self.__objects
-         return fs_objects
+        else:
+            return self.__objects
+        return fs_objects
 
     def new(self, obj):
-        ''' 
-           set in objects the obj with key <obj class name>.id
-           Arguments:
+        '''
+            Set in __objects the obj with key <obj class name>.id
+            Aguments:
                 obj : An instance object.
-         '''
-         key = str(obj.__class__.__name__) + "." + str(obj.id)
-         value_dict = obj
-         FileStorage.__objects[key] = value_dict
+        '''
+        key = str(obj.__class__.__name__) + "." + str(obj.id)
+        value_dict = obj
+        FileStorage.__objects[key] = value_dict
 
-     def save(self):
-         '''serializing to JSON file '''
-         objects_dict = {}
-         for key, val in FileStorage.__objects.items():
-             objects_dict[key] = val.to_dict()
-         with open(FileStorage.__file_path, mode='w', encoding='UTF8') as fd:
-              json.dump(objects_dict, fd)
+    def save(self):
+        '''
+            Serializes __objects attribute to JSON file.
+        '''
+        objects_dict = {}
+        for key, val in FileStorage.__objects.items():
+            objects_dict[key] = val.to_dict()
+        with open(FileStorage.__file_path, mode='w', encoding="UTF8") as fd:
+            json.dump(objects_dict, fd)
 
     def reload(self):
-        '''JSON to __objects '''
+        '''
+            Deserializes the JSON file to __objects.
+        '''
         try:
-            with open(FileStorage.__file_path, encoding='UTF8') as fd:
+            with open(FileStorage.__file_path, encoding="UTF8") as fd:
                 FileStorage.__objects = json.load(fd)
             for key, val in FileStorage.__objects.items():
                 class_name = val["__class__"]
@@ -70,14 +77,17 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        '''delete object if it is inside __objects '''
+        """
+        delete object from __objects if it's inside
+        """
         if obj is not None:
-            key = obj.__class__.name__ + "." + str(obj.id)
+            key = obj.__class__.__name__ + "." + str(obj.id)
             if key in self.__objects:
                 del self.__objects[key]
-         self.save()
-
+        self.save()
 
     def close(self):
-        """call reload() method for deserializing the JSON file to objects"""
+        """
+        call reload
+        """
         self.reload()
