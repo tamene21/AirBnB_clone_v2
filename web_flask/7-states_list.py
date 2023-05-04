@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-m flask import Flask, render_template
+""" this module contains a script that starts a Flask web application
+    the web application must be listening on 0.0.0.0, port 5000
+    Routes: - /states_list """
+
+from flask import Flask, render_template
 from models import storage
 from models.state import State
 
