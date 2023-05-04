@@ -6,6 +6,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey, MetaData
 from sqlalchemy.orm import relationship, backref
 import models
 from os import environ
+from os import getenv
+
+storage_type = getenv("HBNB_TYPE_STORAGE")
 
 
 class State(BaseModel, Base):
@@ -14,14 +17,14 @@ class State(BaseModel, Base):
         name: input name
     """
     __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
 
     if environ.get('HBNB_TYPE_STORAGE') == "db":
         cities = relationship("City",
                               backref="state",
                               cascade="all, delete, delete-orphan")
     else:
-
+        name = ""
+    if environ.get('HBNB_TYPE_STORAGE') == "db":
         @property
         def cities(self):
             """ Returns the list of City instances with
