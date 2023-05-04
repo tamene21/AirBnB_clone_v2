@@ -1,53 +1,46 @@
 #!/usr/bin/python3
-"""
-Contains the DBStorage class
-"""
-
-import models
-from models.amenity import Amenity
-from models.base_model import Basemode, Base
-from model.city import City
-from model.place import Place
-from model.review import Review
-from model.state import State
-from model.user import User
+"""create class DBStorage"""
 from os import getenv
-import sqlalchemy
-from sqlalchemy import create_engine
-froom sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import (create_engine)
+from sqlalchemy.orm import sessionmaker, scoped_session
+from models.amenity import Amenity
+from models.base_model import BaseModel, Base
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 
 
-classes = {"Amentity": Amenity, "city": City, "place": Place,
-            "Review":Review, "State": State, "User": User}
+database = getenv("HBNB_MYSQL_DB")
+user = getenv("HBNB_MYSQL_USER")
+host = getenv("HBNB_MYSQL_HOST")
+password = getenv("HBNB_MYSQL_PWD")
+hbnb_env = getenv("HBNB_ENV")
+
+classes = {"State": State, "City": City, "User": User,
+           "Place": Place, "Review": Review, "Amenity": Amenity}
+
 
 class DBStorage:
-    """Interacts with MySQL DB"""
+    """class DBStorage"""
     __engine = None
     __session = None
 
     def __init__(self):
-        """Instantiate a DBStorage object"""
-        HBNB_MYSQL_USER = getenv('hbnb_dev')
-        HBNB_MYSQL_PWD = getenv('hbnb_dev_pwd')
-        HBNB_MYSQL_HOST = getenv('localhost')
-        HBNB_MYSQL_DB = getenv('hbnb_dev_db')
-        HBNB_ENV = getenv('HBNB_ENV')
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(HBNB_MYSQL_USER,
-                                             HBNB_MYSQL_PWD,
-                                             HBNB_MYSQL_HOST,
-                                             HBNB_MYSQL_DB,
-                                             pool_pre_ping=True))
-        if HBNB_ENV == "test":
+        """initialize instances"""
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format
+                                      (user, password, host, database),
+                                      pool_pre_ping=True)
+
+        if hbnb_env == 'test':
             Base.metadata.drop_all(self.__engine)
 
-
     def all(self, cls=None):
-        """
-        Return instance attributes
+        """return dictionary of instance attributes
         Args:
             cls (obj): memory address of class
-        Returns: 
+        Returns:
             dictionary of objects
         """
         dbobjects = {}
@@ -58,8 +51,8 @@ class DBStorage:
                     val = obj
                     dbobjects[key] = val
             elif cls.__name__ in classes:
-                 for obj in self.__session.query(cls).all():
-                 key = str(obj.__class__.__name__) + "." + str(obj.id)
+                for obj in self.__session.query(cls).all():
+                    key = str(obj.__class__.__name__) + "." + str(obj.id)
                     val = obj
                     dbobjects[key] = val
         else:
@@ -105,5 +98,5 @@ class DBStorage:
         self.__session = Session()
 
     def close(self):
-        """Call a private remove() session attribute""" 
-        self.__session.remove()
+        """close session"""
+        self.__session.close()
